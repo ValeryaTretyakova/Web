@@ -11,18 +11,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Handler implements Runnable {
+    private final Socket socket;
     private final BufferedReader in;
     private final BufferedOutputStream out;
     final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
 
     public Handler(Socket socket) throws IOException {
+        this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new BufferedOutputStream(socket.getOutputStream());
     }
 
     @Override
     public void run() {
-        try {
+        try (socket;  in; out){
             final String requestLine = in.readLine();
             final String[] parts = requestLine.split(" ");
             System.out.println(requestLine);
